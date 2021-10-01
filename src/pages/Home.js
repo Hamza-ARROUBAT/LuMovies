@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 import { SemipolarLoading } from 'react-loadingg';
 import styled from 'styled-components';
 import _ from 'lodash';
+import PaginationButtons from 'components/PaginationButtons';
 
 const LoadingScreen = styled.div`
   position: fixed;
@@ -108,21 +109,38 @@ const MoviesGrid = styled.div`
   gap: 3rem;
 `;
 
+const PaginationContainer = styled.div`
+  display: grid;
+  place-content: center;
+`;
+
 export default function Home() {
   const [movies, setMovies] = useState([]);
   const [filtredMovies, setFiltredMovies] = useState([]);
 
-  const [page, setPage] = useState(1);
+  const [currPage, setPage] = useState(1);
   const [limits, setLimits] = useState([4, 8, 12]);
   const [limit, setLimit] = useState(limits[0]);
 
-  const sliceData = (dataArray, arrayLimit) => {
+  const sliceData = (dataArray, page, arrayLimit, choosenCategory) => {
     setPages(
       Array(Math.ceil(dataArray.length / arrayLimit))
         .fill(0)
-        .map((element, index) => index + 1)
+        .map((element, index) => index)
     );
-    setMovies(dataArray.slice(arrayLimit * (page - 1), arrayLimit * page));
+
+    if (choosenCategory) {
+      const filtred = dataArray.filter(
+        (movie) => movie.category === choosenCategory
+      );
+      setFiltredMovies(
+        filtred.slice(arrayLimit * (page - 1), arrayLimit * page)
+      );
+      setIsLoading(false);
+    } else {
+      setMovies(dataArray.slice(arrayLimit * (page - 1), arrayLimit * page));
+      setIsLoading(false);
+    }
   };
 
   const [pages, setPages] = useState([]);
@@ -133,15 +151,18 @@ export default function Home() {
   const [category, setCategory] = useState('');
 
   // Fetching Data functions
-  const getMovies = () => {
+  const getMovies = (page, limit, choosenCategory) => {
+    setIsLoading(true);
     movies$
       .then((data) => {
-        sliceData(data, limit);
         const keys = Object.keys(_.groupBy(data, 'category'));
         setCategories(keys);
+        sliceData(data, page, limit, choosenCategory);
         setIsLoading(false);
       })
       .catch((err) => console.error(err));
+    // sliceData(movies, page, limit, choosenCategory);
+    // setIsLoading(false);
   };
 
   // Loading Screen
@@ -149,23 +170,25 @@ export default function Home() {
   const [disappear, setDisappear] = useState(false);
 
   useEffect(() => {
-    getMovies();
+    getMovies(currPage, limit, '');
   }, []);
 
-  // Filters management
-  const handleFilter = (moviesArray, ChoosenCategory) => {
-    if (ChoosenCategory === '') {
-      setIsLoading(true);
-      setCategory(ChoosenCategory);
-      setIsLoading(false);
+  useEffect(() => {
+    if (category) {
+      getMovies(currPage, limit, category);
     } else {
-      setIsLoading(true);
-      setCategory(ChoosenCategory);
-      const filtred = moviesArray.filter(
-        (movie) => movie.category === ChoosenCategory
-      );
-      setFiltredMovies(filtred);
-      setIsLoading(false);
+      getMovies(currPage, limit, '');
+    }
+  }, [currPage]);
+
+  // Filters management
+  const handleFilter = (moviesArray, choosenCategory) => {
+    if (choosenCategory === '') {
+      setCategory(choosenCategory);
+      getMovies(choosenCategory);
+    } else {
+      setCategory(choosenCategory);
+      getMovies(currPage, limit, choosenCategory);
     }
   };
 
@@ -286,6 +309,13 @@ export default function Home() {
               <Card key={index} movie={movie} handleDelete={handleDelete} />
             ))}
         </MoviesGrid>
+        <PaginationContainer>
+          <PaginationButtons
+            pages={pages}
+            currentPage={currPage}
+            setCurrentPage={setPage}
+          />
+        </PaginationContainer>
       </Container>
     </>
   ) : (
