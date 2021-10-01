@@ -118,17 +118,12 @@ export default function Home() {
   const [movies, setMovies] = useState([]);
   const [filtredMovies, setFiltredMovies] = useState([]);
 
+  const [pages, setPages] = useState([]);
   const [currPage, setPage] = useState(1);
   const [limits, setLimits] = useState([4, 8, 12]);
   const [limit, setLimit] = useState(limits[0]);
 
   const sliceData = (dataArray, page, arrayLimit, choosenCategory) => {
-    setPages(
-      Array(Math.ceil(dataArray.length / arrayLimit))
-        .fill(0)
-        .map((element, index) => index)
-    );
-
     if (choosenCategory) {
       const filtred = dataArray.filter(
         (movie) => movie.category === choosenCategory
@@ -136,14 +131,22 @@ export default function Home() {
       setFiltredMovies(
         filtred.slice(arrayLimit * (page - 1), arrayLimit * page)
       );
+      setPages(
+        Array(Math.ceil(filtred.length / arrayLimit))
+          .fill(0)
+          .map((element, index) => index)
+      );
       setIsLoading(false);
     } else {
       setMovies(dataArray.slice(arrayLimit * (page - 1), arrayLimit * page));
+      setPages(
+        Array(Math.ceil(dataArray.length / arrayLimit))
+          .fill(0)
+          .map((element, index) => index)
+      );
       setIsLoading(false);
     }
   };
-
-  const [pages, setPages] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -182,14 +185,9 @@ export default function Home() {
   }, [currPage]);
 
   // Filters management
-  const handleFilter = (moviesArray, choosenCategory) => {
-    if (choosenCategory === '') {
-      setCategory(choosenCategory);
-      getMovies(choosenCategory);
-    } else {
-      setCategory(choosenCategory);
-      getMovies(currPage, limit, choosenCategory);
-    }
+  const handleFilter = (choosenCategory) => {
+    setCategory(choosenCategory);
+    getMovies(currPage, limit, choosenCategory);
   };
 
   // const handleLimitChange = (event) => {
@@ -253,6 +251,8 @@ export default function Home() {
     }
   };
 
+  console.log(pages);
+
   return !isLoading ? (
     <>
       <Container>
@@ -282,13 +282,13 @@ export default function Home() {
                 <Select
                   value={category}
                   onChange={(e) => {
-                    handleFilter(movies, e.target.value);
+                    handleFilter(e.target.value);
                   }}
                   displayEmpty
                   inputProps={{ 'aria-label': 'Without label' }}
                 >
                   <MenuItem value=""> - </MenuItem>
-                  {categories?.map((category, index) => (
+                  {categories.map((category, index) => (
                     <MenuItem key={index} value={category} sx={{ width: 160 }}>
                       {category}
                     </MenuItem>
@@ -299,23 +299,43 @@ export default function Home() {
           </FiltersContainer>
         </Header>
 
-        <MoviesGrid>
-          {category &&
-            filtredMovies.map((movie, index) => (
-              <Card key={index} movie={movie} handleDelete={handleDelete} />
-            ))}
-          {!category &&
-            movies.map((movie, index) => (
-              <Card key={index} movie={movie} handleDelete={handleDelete} />
-            ))}
-        </MoviesGrid>
-        <PaginationContainer>
-          <PaginationButtons
-            pages={pages}
-            currentPage={currPage}
-            setCurrentPage={setPage}
-          />
-        </PaginationContainer>
+        {category && (
+          <>
+            <MoviesGrid>
+              {filtredMovies.map((movie, index) => (
+                <Card key={index} movie={movie} handleDelete={handleDelete} />
+              ))}
+            </MoviesGrid>
+
+            {pages.length > 1 && (
+              <PaginationContainer>
+                <PaginationButtons
+                  pages={pages}
+                  currentPage={currPage}
+                  setCurrentPage={setPage}
+                />
+              </PaginationContainer>
+            )}
+          </>
+        )}
+        {!category && (
+          <>
+            <MoviesGrid>
+              {movies.map((movie, index) => (
+                <Card key={index} movie={movie} handleDelete={handleDelete} />
+              ))}
+            </MoviesGrid>
+            {pages.length > 1 && (
+              <PaginationContainer>
+                <PaginationButtons
+                  pages={pages}
+                  currentPage={currPage}
+                  setCurrentPage={setPage}
+                />
+              </PaginationContainer>
+            )}
+          </>
+        )}
       </Container>
     </>
   ) : (

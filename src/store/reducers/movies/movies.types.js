@@ -1,0 +1,1 @@
+export const CHANGE_USER_AVATAR = 'CHANGE_USER_AVATAR';
