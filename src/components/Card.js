@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import indestructibles2 from 'assets/images/jpg/Les indestructibles 2.jpg';
+import { TrashAlt } from '@styled-icons/boxicons-solid/TrashAlt';
 import { Like as RegularLike } from '@styled-icons/boxicons-regular/Like';
 import { Dislike as RegularDislike } from '@styled-icons/boxicons-regular/Dislike';
 import { Like as SolidLike } from '@styled-icons/boxicons-solid/Like';
 import { Dislike as SolidDislike } from '@styled-icons/boxicons-solid/Dislike';
 
 const Container = styled.div`
+  position: relative;
   display: grid;
   box-shadow: 0 -1px 1px hsl(0deg 0% 0% / 0.075),
     0 -2px 2px hsl(0deg 0% 0% / 0.075), 0 -4px 4px hsl(0deg 0% 0% / 0.075),
@@ -32,6 +34,27 @@ const Container = styled.div`
     text-align: center;
     overflow-wrap: break-word;
     color: hsl(0, 86%, 57%);
+  }
+`;
+
+const TrashWrapper = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  padding: 1em;
+  border-radius: 0 15px 0 15px;
+
+  svg {
+    color: hsla(0deg, 0%, 100%, 90%);
+    width: 20px;
+  }
+
+  background: hsla(0deg, 0%, 0%, 40%);
+  transition: background 0.2s;
+  :hover {
+    background: hsla(0deg, 0%, 0%, 65%);
   }
 `;
 
@@ -93,16 +116,18 @@ const DislikeWrapper = styled.div`
   }
 `;
 
-export default function Card({ title, category, likes, dislikes }) {
+export default function Card({ movie, handleDelete }) {
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [isInitialState, setIsInitialState] = useState(!isLiked && !isDisliked);
 
-  const handleInitialState = () => {
-    if (isInitialState) {
-      setIsInitialState(false);
-      setIsLiked(true);
-    }
+  const handleInitialLike = () => {
+    setIsInitialState(false);
+    setIsLiked(true);
+  };
+  const handleInitialDislike = () => {
+    setIsInitialState(false);
+    setIsDisliked(true);
   };
 
   const handleLikeClicked = () => {
@@ -125,25 +150,32 @@ export default function Card({ title, category, likes, dislikes }) {
 
   return (
     <Container>
+      <TrashWrapper
+        onClick={() => {
+          handleDelete(movie.id);
+        }}
+      >
+        <TrashAlt />
+      </TrashWrapper>
       <img src={indestructibles2} alt="" />
-      <h2>{title}</h2>
-      <p>{category}</p>
+      <h2>{movie.title}</h2>
+      <p>{movie.category}</p>
       {isInitialState ? (
         <LikesContainer>
-          <LikeWrapper onClick={handleInitialState}>
+          <LikeWrapper onClick={handleInitialLike}>
             <RegularLike />
-            <p>{likes}</p>
+            <p>{movie.likes}</p>
           </LikeWrapper>
-          <DislikeWrapper onClick={handleInitialState}>
+          <DislikeWrapper onClick={handleInitialDislike}>
             <RegularDislike />
-            <p>{dislikes}</p>
+            <p>{movie.dislikes}</p>
           </DislikeWrapper>
         </LikesContainer>
       ) : (
         <LikesContainer>
           <LikeWrapper isLiked={isLiked} onClick={handleLikeClicked}>
             {isLiked ? <SolidLike /> : <RegularLike />}
-            <p>{likes}</p>
+            <p>{movie.likes}</p>
           </LikeWrapper>
 
           <DislikeWrapper
@@ -151,7 +183,7 @@ export default function Card({ title, category, likes, dislikes }) {
             onClick={handleDislikeClicked}
           >
             {isDisliked ? <SolidDislike /> : <RegularDislike />}
-            <p>{dislikes}</p>
+            <p>{movie.dislikes}</p>
           </DislikeWrapper>
         </LikesContainer>
       )}

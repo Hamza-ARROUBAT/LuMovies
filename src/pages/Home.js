@@ -14,6 +14,7 @@ import { movies$ } from 'movies';
 import React, { useEffect, useState } from 'react';
 import { SemipolarLoading } from 'react-loadingg';
 import styled from 'styled-components';
+import _ from 'lodash';
 
 const LoadingScreen = styled.div`
   position: fixed;
@@ -78,29 +79,14 @@ const Header = styled.div`
   grid-template-columns: min-content min-content;
   justify-content: end;
   align-items: center;
-  gap: 25px 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: auto min-content;
-  }
 `;
 
 const FiltersContainer = styled.div`
   display: grid;
-  grid-template-columns: min-content min-content;
   align-items: center;
-  gap: 0 20px;
 
   p {
     margin: 0;
-  }
-`;
-const Filter = styled.div`
-  display: grid;
-  gap: 10px 0;
-
-  p {
-    font-weight: bold;
   }
 `;
 
@@ -116,77 +102,6 @@ const SelectContainer = styled.div`
   }
 `;
 
-const FilterButton = styled.div`
-  display: grid;
-  grid-template-columns: min-content auto;
-  align-items: center;
-  gap: 0 10px;
-  cursor: pointer;
-  background: hsl(0, 0%, 95%);
-  border: 1px solid hsl(0, 0%, 85%);
-  border-radius: 10px;
-  padding: 0.6em 1.5em;
-  height: min-content;
-
-  svg {
-    width: 15px;
-    transition: color 0.25s;
-  }
-
-  p {
-    margin: 0;
-    transition: color 0.25s;
-  }
-
-  transition: background 0.25s, border 0.25s;
-  ${({ isClicked }) =>
-    isClicked &&
-    `background: hsl(196deg 100% 44%);
-     color: white;
-     border: 1px solid hsl(0, 0%, 100%);
-
-     svg {
-       color: white;
-     }
-  `}
-`;
-
-const SearchBar = styled.div`
-  display: grid;
-  grid-template-columns: min-content auto;
-  align-items: center;
-  gap: 0 10px;
-
-  border: 2px solid hsl(0, 0%, 80%);
-  border-radius: 20px;
-  padding: 0.5em 1em;
-
-  svg {
-    width: 15px;
-    transition: color 0.5s;
-  }
-
-  input {
-    outline: none;
-    border: none;
-    background: transparent;
-    font-size: 1rem;
-  }
-
-  transition: border 0.2s;
-  :focus-within {
-    border: 2px solid hsl(196deg 100% 44%);
-
-    svg {
-      color: hsl(196deg 100% 44%);
-    }
-  }
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
 const MoviesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -195,17 +110,35 @@ const MoviesGrid = styled.div`
 
 export default function Home() {
   const [movies, setMovies] = useState([]);
+  const [filtredMovies, setFiltredMovies] = useState([]);
+
+  const [page, setPage] = useState(1);
+  const [limits, setLimits] = useState([4, 8, 12]);
+  const [limit, setLimit] = useState(limits[0]);
+
+  const sliceData = (dataArray, arrayLimit) => {
+    setPages(
+      Array(Math.ceil(dataArray.length / arrayLimit))
+        .fill(0)
+        .map((element, index) => index + 1)
+    );
+    setMovies(dataArray.slice(arrayLimit * (page - 1), arrayLimit * page));
+  };
+
+  const [pages, setPages] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState('');
-  const [prevCategory, setPrevCategory] = useState('');
 
   // Fetching Data functions
   const getMovies = () => {
     movies$
       .then((data) => {
-        setMovies(data);
+        sliceData(data, limit);
+        const keys = Object.keys(_.groupBy(data, 'category'));
+        setCategories(keys);
         setIsLoading(false);
       })
       .catch((err) => console.error(err));
@@ -220,70 +153,120 @@ export default function Home() {
   }, []);
 
   // Filters management
-  const [isFilterClicked, setIsFilterClicked] = useState(false);
-
-  const handleCategoryChange = (event) => {
-    setSearched('');
-    setPrevCategory(category);
-    setCategory(event.target.value);
-    setIsLoading(true);
-    getMovies();
+  const handleFilter = (moviesArray, ChoosenCategory) => {
+    if (ChoosenCategory === '') {
+      setIsLoading(true);
+      setCategory(ChoosenCategory);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+      setCategory(ChoosenCategory);
+      const filtred = moviesArray.filter(
+        (movie) => movie.category === ChoosenCategory
+      );
+      setFiltredMovies(filtred);
+      setIsLoading(false);
+    }
   };
-  
 
-  const allCategories = [
-    'PC',
-    'Xbox 360',
-    'PS3',
-    'Xbox One',
-    'PS4',
-    'PS5',
-    'Nintendo Switch',
-    'Android',
-  ];
-
-  // Search management
-  const [searched, setSearched] = useState('');
-  // prettier-ignore
-  const [searchedCategory, setSearchedCategory] = useState([]);
-  // prettier-ignore
-
-  // const handleSearchChange = (e) => {
-  //   setSearched(e.target.value);
-  //   setIsLoading(true);
-
-  //   if (tab === 0) {
-  //     const filtred = movies.filter((element) =>
-  //       element.movie.toLowerCase().includes(e.target.value.toLowerCase())
-  //     );
-  //     setSearchedCategory(filtred);
+  // const handleLimitChange = (event) => {
+  //   if (category) {
+  //     setIsLoading(true);
+  //     setCategory(event.target.value);
   //     setIsLoading(false);
   //   } else {
-  //     const filtred = topGamesByPlayers.filter((element) =>
-  //       element.movie.toLowerCase().includes(e.target.value.toLowerCase())
+  //     setIsLoading(true);
+  //     setLimit(event.target.value);
+  //     const slicedMovies = movies.filter(
+  //       (movie) => movie.category === event.target.value
   //     );
-  //     setSearchedTopGamesByPlayers(filtred);
+  //     setFiltredMovies(filtred);
+  //     setIsLoading(false);
+  //   }
+
+  //   if (category) {
+  //     setIsLoading(true);
+  //     newFiltredMoviesArray = filtredMovies.filter((movie) => movie.id !== id);
+  //     setFiltredMovies(newFiltredMoviesArray);
+
+  //     if (newFiltredMoviesArray.length === 0) {
+  //       setCategories(categories.filter((categ) => categ !== category));
+  //       setCategory('');
+  //     }
+
+  //     newMoviesArray = movies.filter((movie) => movie.id !== id);
+  //     setMovies(newMoviesArray);
+  //     setIsLoading(false);
+  //   } else {
+  //     setIsLoading(true);
+  //     newMoviesArray = movies.filter((movie) => movie.id !== id);
+  //     setMovies(newMoviesArray);
   //     setIsLoading(false);
   //   }
   // };
 
-  return (
+  const handleDelete = (id) => {
+    let newMoviesArray;
+    let newFiltredMoviesArray;
+
+    if (category) {
+      setIsLoading(true);
+      newFiltredMoviesArray = filtredMovies.filter((movie) => movie.id !== id);
+      setFiltredMovies(newFiltredMoviesArray);
+
+      if (newFiltredMoviesArray.length === 0) {
+        setCategories(categories.filter((categ) => categ !== category));
+        setCategory('');
+      }
+
+      newMoviesArray = movies.filter((movie) => movie.id !== id);
+      setMovies(newMoviesArray);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+      newMoviesArray = movies.filter((movie) => movie.id !== id);
+      setMovies(newMoviesArray);
+      setIsLoading(false);
+    }
+  };
+
+  return !isLoading ? (
     <>
       <Container>
-        <Title>Les Films 🎬🍿</Title>
+        <Title>Nos films ! 🎬🍿</Title>
         <Header>
+          <SelectContainer>
+            <FormControl sx={{ width: 165, height: 'auto' }}>
+              <Select
+                value={limit}
+                onChange={(e) => {
+                  handleFilter(movies, e.target.value);
+                }}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                {limits.map((limit, index) => (
+                  <MenuItem key={index} value={limit} sx={{ width: 160 }}>
+                    {limit}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </SelectContainer>
           <FiltersContainer>
             <SelectContainer>
-              <FormControl sx={{ width: 165 }}>
+              <FormControl sx={{ width: 165, height: 'auto' }}>
                 <Select
                   value={category}
-                  onChange={handleCategoryChange}
+                  onChange={(e) => {
+                    handleFilter(movies, e.target.value);
+                  }}
                   displayEmpty
                   inputProps={{ 'aria-label': 'Without label' }}
                 >
                   <MenuItem value=""> - </MenuItem>
-                  {allCategories.map((category) => (
-                    <MenuItem value={category} sx={{ width: 160 }}>
+                  {categories?.map((category, index) => (
+                    <MenuItem key={index} value={category} sx={{ width: 160 }}>
                       {category}
                     </MenuItem>
                   ))}
@@ -291,23 +274,21 @@ export default function Home() {
               </FormControl>
             </SelectContainer>
           </FiltersContainer>
-          <SearchBar>
-            <Search />
-            <input
-              type="text"
-              placeholder="Search by movie"
-              value={searched}
-            // onChange={handleSearchChange}
-            />
-          </SearchBar>
-
         </Header>
+
         <MoviesGrid>
-          {movies.map(movie =>
-            <Card title={movie.title} category={movie.category} likes={movie.likes} dislikes={movie.dislikes} />
-          )}
+          {category &&
+            filtredMovies.map((movie, index) => (
+              <Card key={index} movie={movie} handleDelete={handleDelete} />
+            ))}
+          {!category &&
+            movies.map((movie, index) => (
+              <Card key={index} movie={movie} handleDelete={handleDelete} />
+            ))}
         </MoviesGrid>
       </Container>
     </>
+  ) : (
+    <> kek </>
   );
 }
