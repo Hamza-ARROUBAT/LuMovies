@@ -131,6 +131,7 @@ export default function Home() {
   const limits = [4, 8, 12];
   const [limit, setLimit] = useState(limits[0]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageDataLength, setCurrentPageDataLength] = useState(0);
 
   // Loading Screen
   const [animate, setAnimate] = useState(false);
@@ -145,7 +146,8 @@ export default function Home() {
         setDisappear(true);
       }, 1000);
     }, 3000);
-  }, [dispatch, currentPage, limit]);
+    // eslint-disable-next-line
+  }, [dispatch]);
 
   // Filtering data
   const [category, setCategory] = useState('');
@@ -157,8 +159,19 @@ export default function Home() {
     }
   }, [filtredMoviesLength]);
 
+  useEffect(() => {
+    
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentPageDataLength === 1) {
+      setCurrentPage(1);
+    }
+  }, [currentPageDataLength]);
+
   const handleFilter = (choosenCategory) => {
     setCategory(choosenCategory);
+    setCurrentPage(1);
     setFiltredMoviesLength(
       moviesData.filter((movie) => movie.category === choosenCategory).length
     );
@@ -168,8 +181,19 @@ export default function Home() {
     dispatch(deleteMovie(id));
     if (category) {
       setFiltredMoviesLength(filtredMoviesLength - 1);
+      setCurrentPageDataLength(
+        moviesData
+          .filter((movie) => movie.category === category)
+          .slice(limit * (currentPage - 1), limit * currentPage).length
+      );
+    } else {
+      setCurrentPageDataLength(
+        moviesData.slice(limit * (currentPage - 1), limit * currentPage).length
+      );
     }
   };
+
+  console.log(currentPageDataLength);
   return (
     <>
       {/* Loading Screen */}
