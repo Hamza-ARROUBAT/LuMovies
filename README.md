@@ -4,4 +4,4 @@
 
 Hope you like it ! 😉👍🏼 <br/>
 
-To run the App on your machines 💻, just run `yarn install` and then `yarn start`, if you want to use npm, u can do so, just don't forget to remove `yarn.lock` files.
+Pour lancer l'application 💻, il suffit de taper `yarn install` puis `yarn start` dans votre terminal. Si vous préférez utiliser npm au lieu de yarn sa sera les même commandes juste n'oubliez pas d'effacer le fichier `yarn.lock`.
