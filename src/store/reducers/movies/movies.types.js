@@ -6,9 +6,9 @@ const { successTag, errorTag } = apiActionTypes;
 
 export const LOADING_MOVIES = 'LOADING_MOVIES';
 
-export const FETCH_ALL_MOVIES = 'FETCH_ALL_MOVIES';
-export const FETCH_ALL_MOVIES_SUCCESS = typeCreator(FETCH_ALL_MOVIES, successTag);
-export const FETCH_ALL_MOVIES_ERROR = typeCreator(FETCH_ALL_MOVIES, errorTag);
+export const FETCH_MOVIES = 'FETCH_MOVIES';
+export const FETCH_MOVIES_SUCCESS = typeCreator(FETCH_MOVIES, successTag);
+export const FETCH_MOVIES_ERROR = typeCreator(FETCH_MOVIES, errorTag);
 
 export const DELETE_MOVIE = 'DELETE_MOVIE';
 

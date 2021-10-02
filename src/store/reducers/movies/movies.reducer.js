@@ -2,7 +2,7 @@ import produce, { current } from 'immer';
 import {
   DELETE_MOVIE,
   DISLIKE_MOVIE,
-  FETCH_ALL_MOVIES_SUCCESS,
+  FETCH_MOVIES_SUCCESS,
   LIKE_MOVIE,
   LOADING_MOVIES,
 } from './movies.types';
@@ -24,7 +24,7 @@ const cardsReducer = produce((draft, action) => {
       draft.isLoading = true;
       break;
 
-    case FETCH_ALL_MOVIES_SUCCESS:
+    case FETCH_MOVIES_SUCCESS:
       draft.isLoading = true;
       draft.data = action.payload;
       draft.isLoading = false;
@@ -48,7 +48,6 @@ const cardsReducer = produce((draft, action) => {
             return movie;
           }
         });
-
         draft.likedMovies = [...currentDraft.likedMovies, action.id];
       } else {
         draft.data = currentDraft.data.map((movie) => {
@@ -79,7 +78,6 @@ const cardsReducer = produce((draft, action) => {
             return movie;
           }
         });
-
         draft.dislikedMovies = [...currentDraft.dislikedMovies, action.id];
       } else {
         draft.data = currentDraft.data.map((movie) => {

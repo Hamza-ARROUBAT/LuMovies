@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   deleteMovie,
-  getAllMovies,
+  getMovies,
   loadingMovies,
 } from 'store/reducers/movies/movies.action';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import _ from 'lodash';
+import PaginationButtons from 'components/PaginationButtons';
 
 const Container = styled.div`
   display: grid;
@@ -60,17 +61,25 @@ const MoviesGrid = styled.div`
   gap: 3rem;
 `;
 
+const PaginationContainer = styled.div`
+  display: grid;
+  place-content: center;
+`;
+
 export default function Home() {
+  // store selectors
   const dispatch = useDispatch();
   const isMoviesLoading = useSelector((state) => state.movies.isLoading);
   const moviesData = useSelector((state) => state.movies.data);
   const likedMovies = useSelector((state) => state.movies.likedMovies);
   const dislikedMovies = useSelector((state) => state.movies.dislikedMovies);
 
+  const [limit, setLimit] = useState(4);
+  const [currentPage, setCurrentPage] = useState(1);
+
   // Fetching data
   useEffect(() => {
-    dispatch(loadingMovies());
-    dispatch(getAllMovies());
+    dispatch(getMovies(currentPage, limit));
   }, [dispatch]);
 
   // Filtering data
@@ -130,24 +139,11 @@ export default function Home() {
             </SelectContainer>
           </FiltersContainer>
         </Header>
-        <MoviesGrid>
-          {!category ? (
-            <>
-              {moviesData.map((movie, index) => (
-                <Card
-                  key={index}
-                  movie={movie}
-                  isLiked={likedMovies.includes(movie.id)}
-                  isDisliked={dislikedMovies.includes(movie.id)}
-                  handleDelete={handleDelete}
-                  dispatch={dispatch}
-                />
-              ))}
-            </>
-          ) : (
-            <>
+        {!category ? (
+          <>
+            <MoviesGrid>
               {moviesData
-                .filter((movie) => movie.category === category)
+                .slice(limit * (currentPage - 1), limit * currentPage)
                 .map((movie, index) => (
                   <Card
                     key={index}
@@ -158,9 +154,58 @@ export default function Home() {
                     dispatch={dispatch}
                   />
                 ))}
-            </>
-          )}
-        </MoviesGrid>
+            </MoviesGrid>
+            {moviesData.slice(limit * (currentPage - 1), limit * currentPage)
+              .length > 1 && (
+              <PaginationContainer>
+                <PaginationButtons
+                  pages={Array(Math.ceil(moviesData.length / limit))
+                    .fill(0)
+                    .map((element, index) => index)}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </PaginationContainer>
+            )}
+          </>
+        ) : (
+          <>
+            <MoviesGrid>
+              {moviesData
+                .filter((movie) => movie.category === category)
+                .slice(limit * (currentPage - 1), limit * currentPage)
+                .map((movie, index) => (
+                  <Card
+                    key={index}
+                    movie={movie}
+                    isLiked={likedMovies.includes(movie.id)}
+                    isDisliked={dislikedMovies.includes(movie.id)}
+                    handleDelete={handleDelete}
+                    dispatch={dispatch}
+                  />
+                ))}
+            </MoviesGrid>
+            {moviesData
+              .filter((movie) => movie.category === category)
+              .slice(limit * (currentPage - 1), limit * currentPage).length >
+              1 && (
+              <PaginationContainer>
+                <PaginationButtons
+                  pages={Array(
+                    Math.ceil(
+                      moviesData.filter((movie) => movie.category === category)
+                        .length / limit
+                    )
+                  )
+                    .fill(0)
+                    .map((element, index) => index)}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                />
+              </PaginationContainer>
+            )}
+          </>
+        )}
       </Container>
     </>
   ) : (

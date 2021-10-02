@@ -1,4 +1,4 @@
-<h1 align="center">&lt;&lt;Test particeep&gt;&gt;<br/> Candidature pour le poste : Développeur Front-End React</h1>
+<h1 align="center">Lumovies<br/> (React-interview pour le poste : Développeur Front-End React)</h1>
 
 # Introduction
 
