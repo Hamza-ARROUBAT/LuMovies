@@ -2,6 +2,7 @@ import Card from 'components/Card';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  deleteMovie,
   getAllMovies,
   loadingMovies,
 } from 'store/reducers/movies/movies.action';
@@ -38,15 +39,19 @@ export default function Home() {
   const dispatch = useDispatch();
   const isMoviesLoading = useSelector((state) => state.movies.isLoading);
   const moviesData = useSelector((state) => state.movies.data);
+  const likedMovies = useSelector((state) => state.movies.likedMovies);
+  const dislikedMovies = useSelector((state) => state.movies.dislikedMovies);
 
   // Fetching Data functions
   useEffect(() => {
     dispatch(loadingMovies());
     dispatch(getAllMovies());
-  }, []);
+  }, [dispatch]);
 
   // Filters management
-  const handleDelete = (id) => {};
+  const handleDelete = (id) => {
+    dispatch(deleteMovie(id));
+  };
 
   return !isMoviesLoading ? (
     <>
@@ -55,7 +60,14 @@ export default function Home() {
         <Header></Header>
         <MoviesGrid>
           {moviesData.map((movie, index) => (
-            <Card key={index} movie={movie} handleDelete={handleDelete} />
+            <Card
+              key={index}
+              movie={movie}
+              isLiked={likedMovies.includes(movie.id)}
+              isDisliked={dislikedMovies.includes(movie.id)}
+              handleDelete={handleDelete}
+              dispatch={dispatch}
+            />
           ))}
         </MoviesGrid>
       </Container>

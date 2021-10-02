@@ -6,6 +6,8 @@ import { Like as RegularLike } from '@styled-icons/boxicons-regular/Like';
 import { Dislike as RegularDislike } from '@styled-icons/boxicons-regular/Dislike';
 import { Like as SolidLike } from '@styled-icons/boxicons-solid/Like';
 import { Dislike as SolidDislike } from '@styled-icons/boxicons-solid/Dislike';
+import { numberFormat } from 'utils/numberFormat';
+import { dislikeMovie, likeMovie } from 'store/reducers/movies/movies.action';
 
 const Container = styled.div`
   position: relative;
@@ -116,35 +118,23 @@ const DislikeWrapper = styled.div`
   }
 `;
 
-export default function Card({ movie, handleDelete }) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
-  const [isInitialState, setIsInitialState] = useState(!isLiked && !isDisliked);
-
-  const handleInitialLike = () => {
-    setIsInitialState(false);
-    setIsLiked(true);
-  };
-  const handleInitialDislike = () => {
-    setIsInitialState(false);
-    setIsDisliked(true);
-  };
+export default function Card({ movie, isLiked, isDisliked, handleDelete, dispatch }) {
 
   const handleLikeClicked = () => {
     if (isDisliked) {
-      setIsLiked(true);
-      setIsDisliked(false);
+      dispatch(likeMovie(movie.id));
+      dispatch(dislikeMovie(movie.id));
     } else {
-      setIsLiked(!isLiked);
+      dispatch(likeMovie(movie.id));
     }
   };
 
   const handleDislikeClicked = () => {
     if (isLiked) {
-      setIsDisliked(true);
-      setIsLiked(false);
+      dispatch(likeMovie(movie.id));
+      dispatch(dislikeMovie(movie.id));
     } else {
-      setIsDisliked(!isDisliked);
+      dispatch(dislikeMovie(movie.id));
     }
   };
 
@@ -160,33 +150,17 @@ export default function Card({ movie, handleDelete }) {
       <img src={indestructibles2} alt="indestructibles 2" />
       <h2>{movie.title}</h2>
       <p>{movie.category}</p>
-      {isInitialState ? (
-        <LikesContainer>
-          <LikeWrapper onClick={handleInitialLike}>
-            <RegularLike />
-            <p>{movie.likes}</p>
-          </LikeWrapper>
-          <DislikeWrapper onClick={handleInitialDislike}>
-            <RegularDislike />
-            <p>{movie.dislikes}</p>
-          </DislikeWrapper>
-        </LikesContainer>
-      ) : (
-        <LikesContainer>
-          <LikeWrapper isLiked={isLiked} onClick={handleLikeClicked}>
-            {isLiked ? <SolidLike /> : <RegularLike />}
-            <p>{movie.likes}</p>
-          </LikeWrapper>
+      <LikesContainer>
+        <LikeWrapper isLiked={isLiked} onClick={handleLikeClicked}>
+          {isLiked ? <SolidLike /> : <RegularLike />}
+          <p>{movie.likes}</p>
+        </LikeWrapper>
 
-          <DislikeWrapper
-            isDisliked={isDisliked}
-            onClick={handleDislikeClicked}
-          >
-            {isDisliked ? <SolidDislike /> : <RegularDislike />}
-            <p>{movie.dislikes}</p>
-          </DislikeWrapper>
-        </LikesContainer>
-      )}
+        <DislikeWrapper isDisliked={isDisliked} onClick={handleDislikeClicked}>
+          {isDisliked ? <SolidDislike /> : <RegularDislike />}
+          <p>{movie.dislikes}</p>
+        </DislikeWrapper>
+      </LikesContainer>
     </Container>
   );
 }
