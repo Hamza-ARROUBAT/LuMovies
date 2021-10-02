@@ -11,6 +11,24 @@ const Container = styled.div`
   overflow-y: scroll;
   overflow-x: auto;
   padding-bottom: 30px;
+  background: hsl(0deg 12% 58% / 10%);
+
+  /* scrollbar */
+  scrollbar-width: thin;
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(0, 87%, 60%);
+    border-radius: 25px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 `;
 
 export default function AppLayout({ children }) {

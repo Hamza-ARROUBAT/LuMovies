@@ -9,8 +9,8 @@ const Nav = styled.nav`
   grid-template-columns: min-content auto;
   align-items: center;
   gap: 0 100px;
-  padding: 0.8em 2em;
-  background: hsl(0, 0%, 100%);
+  padding: 0.8em 5em;
+  background: hsl(0deg 12% 58% / 0%);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 1px 4px;
 `;
 

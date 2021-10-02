@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import indestructibles2 from 'assets/images/jpg/Les indestructibles 2.jpg';
 import { TrashAlt } from '@styled-icons/boxicons-solid/TrashAlt';
 import { Like as RegularLike } from '@styled-icons/boxicons-regular/Like';
 import { Dislike as RegularDislike } from '@styled-icons/boxicons-regular/Dislike';
@@ -20,7 +19,7 @@ const Container = styled.div`
 
   img {
     width: 100%;
-    border-radius: 15px 15px 0 0;
+    height: 50%;
   }
 
   h2 {
@@ -37,6 +36,15 @@ const Container = styled.div`
     overflow-wrap: break-word;
     color: hsl(0, 86%, 57%);
   }
+`;
+
+const MovieImg = styled.div`
+  height: 200px;
+  background-image: url('${(props) => props.imgUri}');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px 15px 0 0;
 `;
 
 const TrashWrapper = styled.button`
@@ -156,7 +164,7 @@ export default function Card({
       >
         <TrashAlt />
       </TrashWrapper>
-      <img src={indestructibles2} alt="indestructibles 2" />
+      <MovieImg imgUri={`/assets/images/jpg/${movie.title}.jpg`} />
       <h2>{movie.title}</h2>
       <p>{movie.category}</p>
       <LikesContainer>

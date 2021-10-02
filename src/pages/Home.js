@@ -10,6 +10,7 @@ import _ from 'lodash';
 import PaginationButtons from 'components/PaginationButtons';
 import { SemipolarLoading } from 'react-loadingg';
 import logo from 'assets/images/svg/icons/logo.svg';
+import popcorn from 'assets/images/svg/icons/popcorn.svg';
 
 const LoadingScreen = styled.div`
   position: fixed;
@@ -57,14 +58,28 @@ const LoaderContainer = styled.div`
 const Container = styled.div`
   display: grid;
   grid-auto-rows: min-content;
-  gap: 35px 0;
+  gap: 25px 0;
   margin-top: 20px;
   padding: 0 6em 0 5em;
 `;
 
-const Title = styled.h1`
-  color: hsl(201deg 100% 11%);
-  margin-bottom: 0;
+const TitleContainer = styled.div`
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: end;
+  gap: 0 10px;
+
+  h1 {
+    color: hsl(201deg 100% 11%);
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  img {
+    width: 50px;
+  }
 `;
 
 const Header = styled.div`
@@ -97,6 +112,7 @@ const MoviesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 3rem;
+  margin-bottom: 1em;
 `;
 
 const PaginationContainer = styled.div`
@@ -129,7 +145,7 @@ export default function Home() {
         setDisappear(true);
       }, 1000);
     }, 3000);
-  });
+  }, [dispatch, currentPage, limit]);
 
   // Filtering data
   const [category, setCategory] = useState('');
@@ -167,53 +183,60 @@ export default function Home() {
         </LoaderContainer>
       </LoadingScreen>
 
-      <Container>
-        <Title>Nos films ! 🎬🍿</Title>
-        <Header>
-          <SelectContainer>
-            <p>Nombre de pages</p>
-            <FormControl sx={{ width: 165, height: 'auto' }}>
-              <Select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(e.target.value);
-                  setCurrentPage(1);
-                }}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                {limits.map((limit, index) => (
-                  <MenuItem key={index} value={limit} sx={{ width: 160 }}>
-                    {limit}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </SelectContainer>
-          <SelectContainer>
-            <p>Catégorie</p>
-            <FormControl sx={{ width: 165, height: 'auto' }}>
-              <Select
-                value={category}
-                onChange={(e) => {
-                  handleFilter(e.target.value);
-                }}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                <MenuItem value=""> - </MenuItem>
-                {Object.keys(_.groupBy(moviesData, 'category')).map(
-                  (category, index) => (
-                    <MenuItem key={index} value={category} sx={{ width: 160 }}>
-                      {category}
+      {!isMoviesLoading ? (
+        <Container>
+          <TitleContainer>
+            <h1>Nos films</h1>
+            <img src={popcorn} alt="popcorn" />
+          </TitleContainer>
+          <Header>
+            <SelectContainer>
+              <p>Nombre d'élements</p>
+              <FormControl sx={{ width: 165, height: 'auto' }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  {limits.map((limit, index) => (
+                    <MenuItem key={index} value={limit} sx={{ width: 160 }}>
+                      {limit}
                     </MenuItem>
-                  )
-                )}
-              </Select>
-            </FormControl>
-          </SelectContainer>
-        </Header>
-        {!isMoviesLoading ? (
+                  ))}
+                </Select>
+              </FormControl>
+            </SelectContainer>
+            <SelectContainer>
+              <p>Catégorie</p>
+              <FormControl sx={{ width: 165, height: 'auto' }}>
+                <Select
+                  value={category}
+                  onChange={(e) => {
+                    handleFilter(e.target.value);
+                  }}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  <MenuItem value=""> - </MenuItem>
+                  {Object.keys(_.groupBy(moviesData, 'category')).map(
+                    (category, index) => (
+                      <MenuItem
+                        key={index}
+                        value={category}
+                        sx={{ width: 160 }}
+                      >
+                        {category}
+                      </MenuItem>
+                    )
+                  )}
+                </Select>
+              </FormControl>
+            </SelectContainer>
+          </Header>
           <>
             {!category ? (
               <>
@@ -289,10 +312,10 @@ export default function Home() {
               </>
             )}
           </>
-        ) : (
-          <> Loading </>
-        )}
-      </Container>
+        </Container>
+      ) : (
+        <> Loading </>
+      )}
     </>
   );
 }
