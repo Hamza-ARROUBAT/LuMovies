@@ -1,18 +1,17 @@
-export const numberFormat = (number, decimals, dec_point, thousands_sep) => {
-  // Strip all characters but numerical ones.
-  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
-  var n = !isFinite(+number) ? 0 : +number,
-    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-    sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep,
-    s = '',
-    toFixedFix = function (n, prec) {
-      var k = Math.pow(10, prec);
-      return '' + Math.round(n * k) / k;
-    };
-  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-  if (s[0].length > 3) {
-    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+export const numberFormat = (number) => {
+  if (Math.floor(number / 1000000000) >= 1) {
+    return Math.floor(number / 1000000000)
+      .toString()
+      .concat('B');
+  } else if (Math.floor(number / 1000000) >= 1) {
+    return Math.floor(number / 1000000)
+      .toString()
+      .concat('M');
+  } else if (Math.floor(number / 1000) >= 1) {
+    return Math.floor(number / 1000)
+      .toString()
+      .concat('K');
+  } else {
+    return number;
   }
-  return s.slice();
 };
