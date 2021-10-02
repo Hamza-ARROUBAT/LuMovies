@@ -8,13 +8,58 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import _ from 'lodash';
 import PaginationButtons from 'components/PaginationButtons';
+import { SemipolarLoading } from 'react-loadingg';
+import logo from 'assets/images/svg/icons/logo.svg';
+
+const LoadingScreen = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background: white;
+  display: grid;
+  grid-template-rows: min-content min-content;
+  place-content: center;
+
+  transition: opacity 0.5s;
+  opacity: ${({ animate }) => animate && '0'};
+  display: ${({ disappear }) => disappear && 'none'};
+`;
+const LogoContainer = styled.div`
+  display: grid;
+  grid-template-columns: min-content max-content;
+  align-items: center;
+  gap: 0 15px;
+
+  img {
+    width: 75px;
+  }
+
+  p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 2rem;
+    color: hsl(0, 87%, 44%);
+  }
+`;
+
+const LoaderContainer = styled.div`
+  position: relative;
+  display: grid;
+  background: red;
+  top: 50px;
+
+  div {
+    margin: 0 auto;
+  }
+`;
 
 const Container = styled.div`
   display: grid;
   grid-auto-rows: min-content;
   gap: 35px 0;
   margin-top: 20px;
-  padding: 0 6em;
+  padding: 0 6em 0 5em;
 `;
 
 const Title = styled.h1`
@@ -25,20 +70,18 @@ const Title = styled.h1`
 const Header = styled.div`
   display: grid;
   grid-template-columns: min-content min-content;
-  justify-content: end;
   align-items: center;
-`;
-
-const FiltersContainer = styled.div`
-  display: grid;
-  align-items: center;
-
-  p {
-    margin: 0;
-  }
+  gap: 10px;
 `;
 
 const SelectContainer = styled.div`
+  p {
+    margin: 0.5em 0.1em;
+    font-weight: bold;
+    font-size: 1rem;
+    color: hsl(0, 87%, 44%);
+  }
+  
   div {
     height: 35px;
     margin: 0;
@@ -73,9 +116,19 @@ export default function Home() {
   const [limit, setLimit] = useState(limits[0]);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Loading Screen
+  const [animate, setAnimate] = useState(false);
+  const [disappear, setDisappear] = useState(false);
+
   // Fetching data
   useEffect(() => {
     dispatch(getMovies(currentPage, limit));
+    setTimeout(() => {
+      setAnimate(true);
+      setTimeout(() => {
+        setDisappear(true);
+      }, 1000);
+    }, 3000);
   }, [dispatch]);
 
   // Filtering data
@@ -101,134 +154,145 @@ export default function Home() {
       setFiltredMoviesLength(filtredMoviesLength - 1);
     }
   };
-
-  return !isMoviesLoading ? (
+  return (
     <>
+      {/* Loading Screen */}
+      <LoadingScreen animate={animate} disappear={disappear}>
+        <LogoContainer>
+          <img src={logo} alt="Logo" />
+          <p>Lumovies</p>
+        </LogoContainer>
+        <LoaderContainer>
+          <SemipolarLoading />
+        </LoaderContainer>
+      </LoadingScreen>
+
       <Container>
         <Title>Nos films ! 🎬🍿</Title>
         <Header>
-          <FiltersContainer>
-            <SelectContainer>
-              <FormControl sx={{ width: 165, height: 'auto' }}>
-                <Select
-                  value={limit}
-                  onChange={(e) => {
-                    setLimit(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Without label' }}
-                >
-                  {limits.map((limit, index) => (
-                    <MenuItem key={index} value={limit} sx={{ width: 160 }}>
-                      {limit}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </SelectContainer>
-            <SelectContainer>
-              <FormControl sx={{ width: 165, height: 'auto' }}>
-                <Select
-                  value={category}
-                  onChange={(e) => {
-                    handleFilter(e.target.value);
-                  }}
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Without label' }}
-                >
-                  <MenuItem value=""> - </MenuItem>
-                  {Object.keys(_.groupBy(moviesData, 'category')).map(
-                    (category, index) => (
-                      <MenuItem
-                        key={index}
-                        value={category}
-                        sx={{ width: 160 }}
-                      >
-                        {category}
-                      </MenuItem>
-                    )
-                  )}
-                </Select>
-              </FormControl>
-            </SelectContainer>
-          </FiltersContainer>
-        </Header>
-        {!category ? (
-          <>
-            <MoviesGrid>
-              {moviesData
-                .slice(limit * (currentPage - 1), limit * currentPage)
-                .map((movie, index) => (
-                  <Card
-                    key={index}
-                    movie={movie}
-                    isLiked={likedMovies.includes(movie.id)}
-                    isDisliked={dislikedMovies.includes(movie.id)}
-                    handleDelete={handleDelete}
-                    dispatch={dispatch}
-                  />
+          <SelectContainer>
+            <p>Nombre de pages</p>
+            <FormControl sx={{ width: 165, height: 'auto' }}>
+              <Select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setCurrentPage(1);
+                }}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                {limits.map((limit, index) => (
+                  <MenuItem key={index} value={limit} sx={{ width: 160 }}>
+                    {limit}
+                  </MenuItem>
                 ))}
-            </MoviesGrid>
-            {Array(Math.ceil(moviesData.length / limit))
-              .fill(0)
-              .map((element, index) => index).length > 1 && (
-              <PaginationContainer>
-                <PaginationButtons
-                  pages={Array(Math.ceil(moviesData.length / limit))
-                    .fill(0)
-                    .map((element, index) => index)}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                />
-              </PaginationContainer>
+              </Select>
+            </FormControl>
+          </SelectContainer>
+          <SelectContainer>
+            <p>Catégorie</p>
+            <FormControl sx={{ width: 165, height: 'auto' }}>
+              <Select
+                value={category}
+                onChange={(e) => {
+                  handleFilter(e.target.value);
+                }}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value=""> - </MenuItem>
+                {Object.keys(_.groupBy(moviesData, 'category')).map(
+                  (category, index) => (
+                    <MenuItem key={index} value={category} sx={{ width: 160 }}>
+                      {category}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
+          </SelectContainer>
+        </Header>
+        {!isMoviesLoading ? (
+          <>
+            {!category ? (
+              <>
+                <MoviesGrid>
+                  {moviesData
+                    .slice(limit * (currentPage - 1), limit * currentPage)
+                    .map((movie, index) => (
+                      <Card
+                        key={index}
+                        movie={movie}
+                        isLiked={likedMovies.includes(movie.id)}
+                        isDisliked={dislikedMovies.includes(movie.id)}
+                        handleDelete={handleDelete}
+                        dispatch={dispatch}
+                      />
+                    ))}
+                </MoviesGrid>
+                {Array(Math.ceil(moviesData.length / limit))
+                  .fill(0)
+                  .map((element, index) => index).length > 1 && (
+                  <PaginationContainer>
+                    <PaginationButtons
+                      pages={Array(Math.ceil(moviesData.length / limit))
+                        .fill(0)
+                        .map((element, index) => index)}
+                      currentPage={currentPage}
+                      setCurrentPage={setCurrentPage}
+                    />
+                  </PaginationContainer>
+                )}
+              </>
+            ) : (
+              <>
+                <MoviesGrid>
+                  {moviesData
+                    .filter((movie) => movie.category === category)
+                    .slice(limit * (currentPage - 1), limit * currentPage)
+                    .map((movie, index) => (
+                      <Card
+                        key={index}
+                        movie={movie}
+                        isLiked={likedMovies.includes(movie.id)}
+                        isDisliked={dislikedMovies.includes(movie.id)}
+                        handleDelete={handleDelete}
+                        dispatch={dispatch}
+                      />
+                    ))}
+                </MoviesGrid>
+                {Array(
+                  Math.ceil(
+                    moviesData.filter((movie) => movie.category === category)
+                      .length / limit
+                  )
+                )
+                  .fill(0)
+                  .map((element, index) => index).length > 1 && (
+                  <PaginationContainer>
+                    <PaginationButtons
+                      pages={Array(
+                        Math.ceil(
+                          moviesData.filter(
+                            (movie) => movie.category === category
+                          ).length / limit
+                        )
+                      )
+                        .fill(0)
+                        .map((element, index) => index)}
+                      currentPage={currentPage}
+                      setCurrentPage={setCurrentPage}
+                    />
+                  </PaginationContainer>
+                )}
+              </>
             )}
           </>
         ) : (
-          <>
-            <MoviesGrid>
-              {moviesData
-                .filter((movie) => movie.category === category)
-                .slice(limit * (currentPage - 1), limit * currentPage)
-                .map((movie, index) => (
-                  <Card
-                    key={index}
-                    movie={movie}
-                    isLiked={likedMovies.includes(movie.id)}
-                    isDisliked={dislikedMovies.includes(movie.id)}
-                    handleDelete={handleDelete}
-                    dispatch={dispatch}
-                  />
-                ))}
-            </MoviesGrid>
-            {Array(
-              Math.ceil(
-                moviesData.filter((movie) => movie.category === category)
-                  .length / limit
-              )
-            )
-              .fill(0)
-              .map((element, index) => index).length > 1 && (
-              <PaginationContainer>
-                <PaginationButtons
-                  pages={Array(
-                    Math.ceil(
-                      moviesData.filter((movie) => movie.category === category)
-                        .length / limit
-                    )
-                  )
-                    .fill(0)
-                    .map((element, index) => index)}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                />
-              </PaginationContainer>
-            )}
-          </>
+          <> Loading </>
         )}
       </Container>
     </>
-  ) : (
-    <> Loading </>
   );
 }

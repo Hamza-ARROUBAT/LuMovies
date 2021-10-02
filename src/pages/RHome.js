@@ -269,8 +269,19 @@ export default function Home() {
 
   console.log(pages);
 
-  return !isLoading ? (
+  return (
     <>
+      {/* Loading Screen */}
+      <LoadingScreen animate={animate} disappear={disappear}>
+        <LogoContainer>
+          <img src={logo} alt="Logo" />
+          <p>Gaming Charts</p>
+        </LogoContainer>
+        <LoaderContainer>
+          <SemipolarLoading />
+        </LoaderContainer>
+      </LoadingScreen>
+
       <Container>
         <Title>Nos films ! 🎬🍿</Title>
         <Header>
@@ -315,46 +326,63 @@ export default function Home() {
           </FiltersContainer>
         </Header>
 
-        {category && (
+        {!isLoading ? (
           <>
-            <MoviesGrid>
-              {filtredMovies.map((movie, index) => (
-                <Card key={index} movie={movie} handleDelete={handleDelete} />
-              ))}
-            </MoviesGrid>
+            {category && (
+              <>
+                <MoviesGrid>
+                  {filtredMovies.map((movie, index) => (
+                    <Card
+                      key={index}
+                      movie={movie}
+                      handleDelete={handleDelete}
+                    />
+                  ))}
+                </MoviesGrid>
 
-            {pages.length > 1 && (
-              <PaginationContainer>
-                <PaginationButtons
-                  pages={pages}
-                  currentPage={currPage}
-                  setCurrentPage={setPage}
-                />
-              </PaginationContainer>
+                {pages.length > 1 && (
+                  <PaginationContainer>
+                    <PaginationButtons
+                      pages={pages}
+                      currentPage={currPage}
+                      setCurrentPage={setPage}
+                    />
+                  </PaginationContainer>
+                )}
+              </>
+            )}
+            {!category && (
+              <>
+                <MoviesGrid>
+                  {movies.map((movie, index) => (
+                    <Card
+                      key={index}
+                      movie={movie}
+                      handleDelete={handleDelete}
+                    />
+                  ))}
+                </MoviesGrid>
+                {pages.length > 1 && (
+                  <PaginationContainer>
+                    <PaginationButtons
+                      pages={pages}
+                      currentPage={currPage}
+                      setCurrentPage={setPage}
+                    />
+                  </PaginationContainer>
+                )}
+              </>
             )}
           </>
-        )}
-        {!category && (
+        ) : (
           <>
-            <MoviesGrid>
-              {movies.map((movie, index) => (
-                <Card key={index} movie={movie} handleDelete={handleDelete} />
-              ))}
-            </MoviesGrid>
-            {pages.length > 1 && (
-              <PaginationContainer>
-                <PaginationButtons
-                  pages={pages}
-                  currentPage={currPage}
-                  setCurrentPage={setPage}
-                />
-              </PaginationContainer>
-            )}
+            {' '}
+            <LoaderContainer>
+              <SemipolarLoading />
+            </LoaderContainer>{' '}
           </>
         )}
       </Container>
     </>
-  ) : (
-    <> kek </>
   );
 }
