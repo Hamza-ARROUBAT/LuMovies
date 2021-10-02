@@ -1,6 +1,10 @@
 import Card from 'components/Card';
-import { movies$ } from 'movies';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllMovies,
+  loadingMovies,
+} from 'store/reducers/movies/movies.action';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -31,35 +35,26 @@ const MoviesGrid = styled.div`
 `;
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [movies, setMovies] = useState([]);
+  const dispatch = useDispatch();
+  const isMoviesLoading = useSelector((state) => state.movies.isLoading);
+  const moviesData = useSelector((state) => state.movies.data);
 
   // Fetching Data functions
-  const getMovies = () => {
-    setIsLoading(true);
-    movies$
-      .then((data) => {
-        setMovies(data);
-        setIsLoading(false);
-      })
-      .catch((err) => console.error(err));
-  };
-
   useEffect(() => {
-    getMovies();
+    dispatch(loadingMovies());
+    dispatch(getAllMovies());
   }, []);
 
   // Filters management
   const handleDelete = (id) => {};
 
-  return !isLoading ? (
+  return !isMoviesLoading ? (
     <>
       <Container>
         <Title>Nos films ! 🎬🍿</Title>
         <Header></Header>
         <MoviesGrid>
-          {movies.map((movie, index) => (
+          {moviesData.map((movie, index) => (
             <Card key={index} movie={movie} handleDelete={handleDelete} />
           ))}
         </MoviesGrid>

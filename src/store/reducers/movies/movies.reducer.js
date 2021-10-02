@@ -1,17 +1,22 @@
 import produce from 'immer';
-import { FETCH_ALL_PRODUCTS_SUCCESS } from './movies.types';
+import { FETCH_ALL_MOVIES_SUCCESS, LOADING_MOVIES } from './movies.types';
 
 const initialState = {
   isLoading: true,
-  data: null,
+  data: [],
 };
 
 const cardsReducer = produce((draft, action) => {
   switch (action.type) {
-    case FETCH_ALL_PRODUCTS_SUCCESS:
-      draft.data = action.payload.data;
+    case LOADING_MOVIES:
+      draft.isLoading = true;
+      break;
+
+    case FETCH_ALL_MOVIES_SUCCESS:
+      draft.data = action.payload;
       draft.isLoading = false;
       break;
+
     default:
       break;
   }

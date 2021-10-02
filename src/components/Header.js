@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import logo from 'assets/images/png/logo.png';
+import logo from 'assets/images/svg/icons/logo.svg';
 
 const Nav = styled.nav`
   display: grid;
@@ -27,7 +27,7 @@ const StyledLink = styled(Link)`
     margin: 0;
     font-weight: bold;
     font-size: 1.3rem;
-    color: hsl(196deg 100% 30%);
+    color: hsl(0, 87%, 44%);
   }
 `;
 
