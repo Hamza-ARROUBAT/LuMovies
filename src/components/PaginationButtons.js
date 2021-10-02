@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+import { AngleLeft } from '@styled-icons/fa-solid/AngleLeft';
+import { AngleRight } from '@styled-icons/fa-solid/AngleRight';
+import { AngleDoubleLeft } from '@styled-icons/fa-solid/AngleDoubleLeft';
+import { AngleDoubleRight } from '@styled-icons/fa-solid/AngleDoubleRight';
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -7,56 +12,81 @@ const ButtonsContainer = styled.div`
 `;
 
 const DoubleArrowButton = styled.button`
-  margin: 0 1px;
-  padding: 0.3em;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: hsl(0, 87%, 44%);
+  background: hsla(0, 0%, 0%, 1%);
+  margin: 0 0.1em;
+  padding: 0.5em;
   border-radius: 50%;
-  transition: background 0.3s;
-  img {
+  transition: background 0.2s, color 0.2s;
+  svg {
     width: 20px;
   }
 
   :hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background: hsla(0, 0%, 0%, 10%);
   }
 
   :disabled {
-    filter: invert(75%) sepia(54%) saturate(11%) hue-rotate(40deg)
-      brightness(160%) contrast(90%);
+    cursor: default;
+    color: hsla(0, 0%, 0%, 20%);
+    :hover {
+      background: hsla(0, 0%, 0%, 2.5%);
+    }
   }
 `;
 const ArrowButton = styled.button`
-  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: hsl(0, 87%, 44%);
+  background: hsla(0, 0%, 0%, 1%);
+  margin: 0 0.1em;
+  padding: 0.6em 1em;
   border-radius: 50%;
-  padding: 0.3em;
-  transition: background 0.3s;
+  transition: background 0.2s, color 0.2s;
 
-  img {
-    width: 20px;
+  svg {
+    width: 10px;
   }
 
   :hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background: hsla(0, 0%, 0%, 10%);
   }
 
   :disabled {
-    filter: invert(75%) sepia(54%) saturate(11%) hue-rotate(40deg)
-      brightness(160%) contrast(90%);
+    cursor: default;
+    color: hsla(0, 0%, 0%, 20%);
+    :hover {
+      background: hsla(0, 0%, 0%, 2.5%);
+    }
   }
 `;
 
 const NumberButton = styled.button`
+  cursor: pointer;
+  background: none;
+  border: none;
   padding: 0;
   margin: 0 5px;
-  background-color: ${(props) => (props.isActive ? '#da7e2e' : '#dbdbdb')};
+  background-color: ${(props) =>
+    props.isActive ? 'hsl(0, 87%, 44%);' : '#dbdbdb'};
   color: ${(props) => (props.isActive ? '#fff' : '#3b3b3b')};
   border-radius: 50%;
   height: 30px;
   width: 30px;
-  transition: all 0.18s;
+  transition: background 0.2s, color 0.2s;
+  font-weight: 600;
 
   :hover {
-    background-color: #da7e2e;
-    color: #fff;
+    ${(props) =>
+      !props.isActive &&
+      css`
+        background: hsla(0, 0%, 0%, 20%);
+        color: #fff;
+      `};
   }
 `;
 
@@ -111,23 +141,6 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
     }
   };
 
-  const maxIncrementPage = () => {
-    if (currentPage !== lastPage) {
-      if (currentPage === firstPage) {
-        setCurrentPage(currentPage + 1);
-      } else if (currentPage < lastPage - 3 && currentPage !== firstButton) {
-        setFirstButton(firstButton + 1);
-        setSecondButton(secondButton + 1);
-        setCurrentPage(currentPage + 1);
-      } else if (currentPage === lastPage - 3) {
-        setCurrentPage(currentPage + 1);
-        setFirstButton(firstPage);
-      } else {
-        setCurrentPage(currentPage + 1);
-      }
-    }
-  };
-
   const maxDecrementPage = () => {
     if (currentPage !== firstPage) {
       setFirstButton(firstPage);
@@ -143,13 +156,14 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
           onClick={maxDecrementPage}
           disabled={currentPage === firstPage}
         >
-          <img src="/assets/medias/images/double-left-arrow.svg" />
+          <AngleDoubleLeft />
         </DoubleArrowButton>
+
         <ArrowButton
           onClick={decrementPage}
           disabled={currentPage === firstPage}
         >
-          <img src="/assets/medias/images/left-arrow.svg" />
+          <AngleLeft />
         </ArrowButton>
         {pages.map((page) => (
           <NumberButton
@@ -165,7 +179,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
           onClick={incrementPage}
           disabled={currentPage === lastPage}
         >
-          <img src="/assets/medias/images/right-arrow.svg" />
+          <AngleRight />
         </ArrowButton>
         <DoubleArrowButton
           disabled={currentPage === lastPage}
@@ -173,7 +187,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             setCurrentPage(lastPage);
           }}
         >
-          <img src="/assets/medias/images/double-right-arrow.svg" />
+          <AngleDoubleRight />
         </DoubleArrowButton>
       </ButtonsContainer>
     );
@@ -185,13 +199,13 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             onClick={maxDecrementPage}
             disabled={currentPage === firstPage}
           >
-            <img src="/assets/medias/images/double-left-arrow.svg" />
+            <AngleDoubleLeft />
           </DoubleArrowButton>
           <ArrowButton
             onClick={decrementPage}
             disabled={currentPage === firstPage}
           >
-            <img src="/assets/medias/images/left-arrow.svg" />
+            <AngleLeft />
           </ArrowButton>
 
           <NumberButton
@@ -234,7 +248,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             onClick={incrementPage}
             disabled={currentPage === lastPage}
           >
-            <img src="/assets/medias/images/right-arrow.svg" />
+            <AngleRight />
           </ArrowButton>
           <DoubleArrowButton
             disabled={currentPage === lastPage}
@@ -242,7 +256,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
               setCurrentPage(lastPage);
             }}
           >
-            <img src="/assets/medias/images/double-right-arrow.svg" />
+            <AngleDoubleRight />
           </DoubleArrowButton>
         </ButtonsContainer>
       );
@@ -253,13 +267,13 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             disabled={currentPage === firstPage}
             onClick={maxDecrementPage}
           >
-            <img src="/assets/medias/images/double-left-arrow.svg" />
+            <AngleDoubleLeft />
           </DoubleArrowButton>
           <ArrowButton
             onClick={decrementPage}
             disabled={currentPage === firstPage}
           >
-            <img src="/assets/medias/images/left-arrow.svg" />
+            <AngleLeft />
           </ArrowButton>
 
           <NumberButton
@@ -300,15 +314,15 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             {lastPage}
           </NumberButton>
 
-          <ArrowButton onClick={incrementPage}>
-            <img src="/assets/medias/images/right-arrow.svg" />
+          <ArrowButton>
+            <AngleRight onClick={incrementPage} />
           </ArrowButton>
           <DoubleArrowButton
             onClick={() => {
               setCurrentPage(lastPage);
             }}
           >
-            <img src="/assets/medias/images/double-right-arrow.svg" />
+            <AngleDoubleRight />
           </DoubleArrowButton>
         </ButtonsContainer>
       );

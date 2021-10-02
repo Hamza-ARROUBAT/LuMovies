@@ -4,7 +4,6 @@ import {
   DISLIKE_MOVIE,
   FETCH_MOVIES_SUCCESS,
   LIKE_MOVIE,
-  LOADING_MOVIES,
 } from './movies.types';
 
 const initialState = {
@@ -20,10 +19,6 @@ const cardsReducer = produce((draft, action) => {
 
   // switch
   switch (action.type) {
-    case LOADING_MOVIES:
-      draft.isLoading = true;
-      break;
-
     case FETCH_MOVIES_SUCCESS:
       draft.isLoading = true;
       draft.data = action.payload;

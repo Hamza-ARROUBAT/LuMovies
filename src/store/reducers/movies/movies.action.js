@@ -3,12 +3,7 @@ import {
   DISLIKE_MOVIE,
   FETCH_MOVIES,
   LIKE_MOVIE,
-  LOADING_MOVIES,
 } from './movies.types';
-
-export const loadingMovies = () => ({
-  type: LOADING_MOVIES,
-});
 
 export const getMovies = (page, limit) => ({
   type: FETCH_MOVIES,

@@ -1,11 +1,7 @@
 import Card from 'components/Card';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  deleteMovie,
-  getMovies,
-  loadingMovies,
-} from 'store/reducers/movies/movies.action';
+import { deleteMovie, getMovies } from 'store/reducers/movies/movies.action';
 import styled from 'styled-components';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,11 +11,10 @@ import PaginationButtons from 'components/PaginationButtons';
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: minmax(min-content, 75%);
   grid-auto-rows: min-content;
-  justify-content: center;
   gap: 35px 0;
   margin-top: 20px;
+  padding: 0 6em;
 `;
 
 const Title = styled.h1`
@@ -49,7 +44,7 @@ const SelectContainer = styled.div`
     margin: 0;
     div {
       margin: 0;
-      padding: 0.55em 0.8em;
+      padding: 0.55em 0.8em 0.55em 0.7em;
       border-radius: 10px;
     }
   }
@@ -74,7 +69,8 @@ export default function Home() {
   const likedMovies = useSelector((state) => state.movies.likedMovies);
   const dislikedMovies = useSelector((state) => state.movies.dislikedMovies);
 
-  const [limit, setLimit] = useState(4);
+  const [limits, setLimits] = useState([4, 8, 12]);
+  const [limit, setLimit] = useState(limits[0]);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetching data
@@ -112,6 +108,25 @@ export default function Home() {
         <Title>Nos films ! 🎬🍿</Title>
         <Header>
           <FiltersContainer>
+            <SelectContainer>
+              <FormControl sx={{ width: 165, height: 'auto' }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  {limits.map((limit, index) => (
+                    <MenuItem key={index} value={limit} sx={{ width: 160 }}>
+                      {limit}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </SelectContainer>
             <SelectContainer>
               <FormControl sx={{ width: 165, height: 'auto' }}>
                 <Select
@@ -155,8 +170,9 @@ export default function Home() {
                   />
                 ))}
             </MoviesGrid>
-            {moviesData.slice(limit * (currentPage - 1), limit * currentPage)
-              .length > 1 && (
+            {Array(Math.ceil(moviesData.length / limit))
+              .fill(0)
+              .map((element, index) => index).length > 1 && (
               <PaginationContainer>
                 <PaginationButtons
                   pages={Array(Math.ceil(moviesData.length / limit))
@@ -185,10 +201,14 @@ export default function Home() {
                   />
                 ))}
             </MoviesGrid>
-            {moviesData
-              .filter((movie) => movie.category === category)
-              .slice(limit * (currentPage - 1), limit * currentPage).length >
-              1 && (
+            {Array(
+              Math.ceil(
+                moviesData.filter((movie) => movie.category === category)
+                  .length / limit
+              )
+            )
+              .fill(0)
+              .map((element, index) => index).length > 1 && (
               <PaginationContainer>
                 <PaginationButtons
                   pages={Array(
