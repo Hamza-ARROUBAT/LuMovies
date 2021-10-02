@@ -157,7 +157,7 @@ export default function Card({ movie, handleDelete }) {
       >
         <TrashAlt />
       </TrashWrapper>
-      <img src={indestructibles2} alt="" />
+      <img src={indestructibles2} alt="indestructibles 2" />
       <h2>{movie.title}</h2>
       <p>{movie.category}</p>
       {isInitialState ? (
