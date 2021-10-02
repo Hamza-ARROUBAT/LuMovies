@@ -1,6 +1,4 @@
-<h1 align="center">Lumovies<br/> (React-interview pour le poste : Développeur Front-End React)</h1>
-
-# Introduction
+<h1 align="center">Lumovies<br/> (React-interview / Développeur Front-End React)</h1>
 
 Hope you like it ! 😉👍🏼 <br/>
 
