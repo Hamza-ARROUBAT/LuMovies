@@ -82,8 +82,10 @@ const LikesContainer = styled.div`
         `};
 `;
 
-const LikeWrapper = styled.div`
+const LikeWrapper = styled.button`
   cursor: pointer;
+  background: none;
+  border: none;
   display: grid;
   grid-template-columns: min-content min-content;
   justify-content: center;
@@ -98,8 +100,10 @@ const LikeWrapper = styled.div`
     color: ${({ isLiked }) => (isLiked ? 'hsl(199, 99%, 55%)' : 'black')};
   }
 `;
-const DislikeWrapper = styled.div`
+const DislikeWrapper = styled.button`
   cursor: pointer;
+  background: none;
+  border: none;
   display: grid;
   grid-template-columns: min-content min-content;
   justify-content: center;
@@ -118,8 +122,13 @@ const DislikeWrapper = styled.div`
   }
 `;
 
-export default function Card({ movie, isLiked, isDisliked, handleDelete, dispatch }) {
-
+export default function Card({
+  movie,
+  isLiked,
+  isDisliked,
+  handleDelete,
+  dispatch,
+}) {
   const handleLikeClicked = () => {
     if (isDisliked) {
       dispatch(likeMovie(movie.id));

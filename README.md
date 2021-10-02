@@ -1,4 +1,4 @@
-<h1 align="center">Test particeep<br/> Candidature au poste : Développeur Front-End React</h1>
+<h1 align="center">&lt;&lt;Test particeep&gt;&gt;<br/> Candidature pour le poste : Développeur Front-End React</h1>
 
 # Introduction
 
