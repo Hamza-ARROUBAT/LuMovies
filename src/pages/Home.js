@@ -81,7 +81,7 @@ const SelectContainer = styled.div`
     font-size: 1rem;
     color: hsl(0, 87%, 44%);
   }
-  
+
   div {
     height: 35px;
     margin: 0;
@@ -112,7 +112,7 @@ export default function Home() {
   const likedMovies = useSelector((state) => state.movies.likedMovies);
   const dislikedMovies = useSelector((state) => state.movies.dislikedMovies);
 
-  const [limits, setLimits] = useState([4, 8, 12]);
+  const limits = [4, 8, 12];
   const [limit, setLimit] = useState(limits[0]);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -129,7 +129,7 @@ export default function Home() {
         setDisappear(true);
       }, 1000);
     }, 3000);
-  }, [dispatch]);
+  });
 
   // Filtering data
   const [category, setCategory] = useState('');

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import indestructibles2 from 'assets/images/jpg/Les indestructibles 2.jpg';
 import { TrashAlt } from '@styled-icons/boxicons-solid/TrashAlt';
@@ -6,8 +6,8 @@ import { Like as RegularLike } from '@styled-icons/boxicons-regular/Like';
 import { Dislike as RegularDislike } from '@styled-icons/boxicons-regular/Dislike';
 import { Like as SolidLike } from '@styled-icons/boxicons-solid/Like';
 import { Dislike as SolidDislike } from '@styled-icons/boxicons-solid/Dislike';
-import { numberFormat } from 'utils/numberFormat';
 import { dislikeMovie, likeMovie } from 'store/reducers/movies/movies.action';
+import { numberFormat } from 'utils/numberFormat';
 
 const Container = styled.div`
   position: relative;
@@ -162,12 +162,12 @@ export default function Card({
       <LikesContainer>
         <LikeWrapper isLiked={isLiked} onClick={handleLikeClicked}>
           {isLiked ? <SolidLike /> : <RegularLike />}
-          <p>{movie.likes}</p>
+          <p>{numberFormat(movie.likes)}</p>
         </LikeWrapper>
 
         <DislikeWrapper isDisliked={isDisliked} onClick={handleDislikeClicked}>
           {isDisliked ? <SolidDislike /> : <RegularDislike />}
-          <p>{movie.dislikes}</p>
+          <p>{numberFormat(movie.dislikes)}</p>
         </DislikeWrapper>
       </LikesContainer>
     </Container>

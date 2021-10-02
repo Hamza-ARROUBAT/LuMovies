@@ -5,6 +5,7 @@ import { AngleLeft } from '@styled-icons/fa-solid/AngleLeft';
 import { AngleRight } from '@styled-icons/fa-solid/AngleRight';
 import { AngleDoubleLeft } from '@styled-icons/fa-solid/AngleDoubleLeft';
 import { AngleDoubleRight } from '@styled-icons/fa-solid/AngleDoubleRight';
+import { ThreeDots } from '@styled-icons/bootstrap/ThreeDots';
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -217,7 +218,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
             {firstButton}
           </NumberButton>
           <EtcContainer>
-            <img src="/assets/medias/images/button.svg" />
+            <ThreeDots />
           </EtcContainer>
           <NumberButton
             onClick={() => {
@@ -294,7 +295,7 @@ function PaginationButtons({ pages, currentPage, setCurrentPage }) {
           </NumberButton>
 
           <EtcContainer>
-            <img src="/assets/medias/images/button.svg" />
+            <ThreeDots />
           </EtcContainer>
 
           <NumberButton
