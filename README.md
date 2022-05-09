@@ -1,4 +1,4 @@
-<h1 align="center">Lumovies<br/> (React-interview / Développeur Front-End React)</h1>
+<h1 align="center">Lumovies<br/></h1>
 
 Hope you like it ! 😉👍🏼 <br/>
 
